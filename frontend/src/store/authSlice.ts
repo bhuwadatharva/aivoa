@@ -1,14 +1,14 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = 'http://localhost:8000/api/auth';
+const API_URL = "https://aivoa-an49.onrender.com/api/auth";
 
 // Helper to set auth header
 const setAuthHeader = (token: string | null) => {
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
-    delete axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common["Authorization"];
   }
 };
 
@@ -27,13 +27,13 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-const token = localStorage.getItem('token');
+const token = localStorage.getItem("token");
 if (token) {
   setAuthHeader(token);
 }
 
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  user: JSON.parse(localStorage.getItem("user") || "null"),
   token: token,
   loading: false,
   error: null,
@@ -41,40 +41,44 @@ const initialState: AuthState = {
 };
 
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials: any, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
       const data = response.data;
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setAuthHeader(data.access_token);
       return data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Authentication failed');
+      return rejectWithValue(
+        err.response?.data?.detail || "Authentication failed",
+      );
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async (userData: any, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Registration failed');
+      return rejectWithValue(
+        err.response?.data?.detail || "Registration failed",
+      );
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logout(state) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setAuthHeader(null);
       state.user = null;
       state.token = null;
@@ -83,7 +87,7 @@ const authSlice = createSlice({
     },
     clearError(state) {
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder

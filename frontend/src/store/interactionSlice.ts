@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = 'http://localhost:8000/api/interactions';
-const AI_API_URL = 'http://localhost:8000/api/ai';
+const API_URL = "https://aivoa-an49.onrender.com/api/interactions";
+const AI_API_URL = "https://aivoa-an49.onrender.com/api/ai";
 
 interface InteractionState {
   interactions: any[];
@@ -28,92 +28,110 @@ const initialState: InteractionState = {
   metadata: {
     products: [],
     competitors: [],
-    materials: []
+    materials: [],
   },
   loading: false,
-  error: null
+  error: null,
 };
 
 export const fetchInteractions = createAsyncThunk(
-  'interaction/fetchAll',
-  async (params: { hcp_id?: string; sentiment?: string } = {}, { rejectWithValue }) => {
+  "interaction/fetchAll",
+  async (
+    params: { hcp_id?: string; sentiment?: string } = {},
+    { rejectWithValue },
+  ) => {
     try {
       const response = await axios.get(API_URL, { params });
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch interactions');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch interactions",
+      );
     }
-  }
+  },
 );
 
 export const createInteraction = createAsyncThunk(
-  'interaction/create',
+  "interaction/create",
   async (interactionData: any, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.post(API_URL, interactionData);
       dispatch(fetchInteractions({ hcp_id: interactionData.hcp_id }));
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to create interaction');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to create interaction",
+      );
     }
-  }
+  },
 );
 
 export const deleteInteraction = createAsyncThunk(
-  'interaction/delete',
-  async (params: { id: string; hcp_id?: string }, { rejectWithValue, dispatch }) => {
+  "interaction/delete",
+  async (
+    params: { id: string; hcp_id?: string },
+    { rejectWithValue, dispatch },
+  ) => {
     try {
       await axios.delete(`${API_URL}/${params.id}`);
       dispatch(fetchInteractions({ hcp_id: params.hcp_id }));
       return params.id;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to delete interaction');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to delete interaction",
+      );
     }
-  }
+  },
 );
 
 export const fetchMeetingPrep = createAsyncThunk(
-  'interaction/meetingPrep',
+  "interaction/meetingPrep",
   async (hcpId: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${AI_API_URL}/meeting-prep`, {
-        params: { hcp_id: hcpId }
+        params: { hcp_id: hcpId },
       });
       return response.data.briefing_markdown;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch meeting prep briefing');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch meeting prep briefing",
+      );
     }
-  }
+  },
 );
 
 export const fetchNextBestAction = createAsyncThunk(
-  'interaction/nextBestAction',
+  "interaction/nextBestAction",
   async (hcpId: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${AI_API_URL}/next-action`, {
-        params: { hcp_id: hcpId }
+        params: { hcp_id: hcpId },
       });
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch next best action');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch next best action",
+      );
     }
-  }
+  },
 );
 
 export const fetchMetadata = createAsyncThunk(
-  'interaction/fetchMetadata',
+  "interaction/fetchMetadata",
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_URL}/metadata`);
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch metadata');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch metadata",
+      );
     }
-  }
+  },
 );
 
 const interactionSlice = createSlice({
-  name: 'interaction',
+  name: "interaction",
   initialState,
   reducers: {
     setExtractedData(state, action) {
@@ -128,7 +146,7 @@ const interactionSlice = createSlice({
       state.currentExtractedData = null;
       state.complianceWarning = null;
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -172,5 +190,9 @@ const interactionSlice = createSlice({
   },
 });
 
-export const { setExtractedData, setComplianceWarning, clearInteractionStatus } = interactionSlice.actions;
+export const {
+  setExtractedData,
+  setComplianceWarning,
+  clearInteractionStatus,
+} = interactionSlice.actions;
 export default interactionSlice.reducer;

@@ -21,7 +21,7 @@ graph TD
         Router --> Auth[JWT Middleware]
         Router --> Endpoint[AI Chat Endpoint]
         Endpoint --> Graph[LangGraph AI Agent]
-        
+
         subgraph AI Agent Workflow
             Graph --> Detect[1. Intent Detection]
             Detect --> Route{2. Select Tool}
@@ -29,7 +29,7 @@ graph TD
             Exec --> Verify[4. Verify Output]
             Verify --> Resp[5. Respond]
         end
-        
+
         Exec --> Tools[8 Custom LLM Tools]
     end
 
@@ -48,14 +48,14 @@ stateDiagram-v2
     [*] --> START
     START --> IntentDetection : Parse Natural Language Notes
     IntentDetection --> SelectTool : Resolve Intent & Args
-    
+
     state SelectTool <<choice>>
     SelectTool --> ExecuteTool : If Tool Triggered
     SelectTool --> Respond : If Conversational Chat
-    
+
     ExecuteTool --> VerifyOutput : Query/Write Database Records
     VerifyOutput --> Respond : Compliance Scans & Checks
-    
+
     Respond --> END
     END --> [*]
 ```
@@ -104,17 +104,17 @@ aivoa/
 
 ## Database Schema Tables
 
-| Table | Primary Key | Foreign Keys | Key Attributes / Columns |
-| :--- | :--- | :--- | :--- |
-| **users** | `id` (UUID) | None | `email`, `hashed_password`, `full_name`, `role`, `created_at` |
-| **hcps** | `id` (UUID) | None | `name`, `specialty`, `hospital`, `email`, `relationship_score`, `interest_score`, `prescription_likelihood` |
-| **products** | `id` (UUID) | None | `name`, `therapeutic_area`, `description` |
-| **competitors** | `id` (UUID) | None | `name`, `market_product`, `details` |
-| **materials** | `id` (UUID) | None | `name`, `type`, `url` |
-| **interactions** | `id` (UUID) | `user_id`, `hcp_id` | `interaction_type`, `meeting_date`, `meeting_time`, `sentiment`, `summary`, `notes` |
-| **follow_ups** | `id` (UUID) | `hcp_id`, `interaction_id` | `title`, `priority`, `follow_up_date`, `reason`, `status` |
-| **chat_history** | `id` (UUID) | `user_id` | `role` (user/assistant), `content`, `created_at` |
-| **audit_logs** | `id` (UUID) | `user_id` | `action_type`, `description`, `created_at` |
+| Table            | Primary Key | Foreign Keys               | Key Attributes / Columns                                                                                    |
+| :--------------- | :---------- | :------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| **users**        | `id` (UUID) | None                       | `email`, `hashed_password`, `full_name`, `role`, `created_at`                                               |
+| **hcps**         | `id` (UUID) | None                       | `name`, `specialty`, `hospital`, `email`, `relationship_score`, `interest_score`, `prescription_likelihood` |
+| **products**     | `id` (UUID) | None                       | `name`, `therapeutic_area`, `description`                                                                   |
+| **competitors**  | `id` (UUID) | None                       | `name`, `market_product`, `details`                                                                         |
+| **materials**    | `id` (UUID) | None                       | `name`, `type`, `url`                                                                                       |
+| **interactions** | `id` (UUID) | `user_id`, `hcp_id`        | `interaction_type`, `meeting_date`, `meeting_time`, `sentiment`, `summary`, `notes`                         |
+| **follow_ups**   | `id` (UUID) | `hcp_id`, `interaction_id` | `title`, `priority`, `follow_up_date`, `reason`, `status`                                                   |
+| **chat_history** | `id` (UUID) | `user_id`                  | `role` (user/assistant), `content`, `created_at`                                                            |
+| **audit_logs**   | `id` (UUID) | `user_id`                  | `action_type`, `description`, `created_at`                                                                  |
 
 ---
 
@@ -164,7 +164,7 @@ JWT_SECRET=aivoa-super-secret-key-change-in-production
    ```bash
    uvicorn app.main:app --reload --port 8000
    ```
-   The backend API is now running at [http://localhost:8000](http://localhost:8000). The database will automatically initialize and pre-populate seed data on the first start.
+   The backend API is now running at [https://aivoa-an49.onrender.com](https://aivoa-an49.onrender.com). The database will automatically initialize and pre-populate seed data on the first start.
 
 ### Running the Frontend
 
@@ -191,7 +191,7 @@ JWT_SECRET=aivoa-super-secret-key-change-in-production
    - **Password:** `password123`
 2. Navigate to **Log Interaction** on the sidebar.
 3. In the right-hand **AI Chat Assistant**, type the following visit log:
-   > *"Today I met Dr. Shah. We discussed Atorvastatin-A. He was positive about the drug. I shared the Product Brochure. Call after two weeks."*
+   > _"Today I met Dr. Shah. We discussed Atorvastatin-A. He was positive about the drug. I shared the Product Brochure. Call after two weeks."_
 4. Click **Send** in the Chat Assistant. Notice:
    - The assistant resolved the **Log Interaction Tool** intent.
    - The fields on the left (HCP, Products, Sentiment, Materials, Follow-up, Notes, Summary) auto-populate instantly.

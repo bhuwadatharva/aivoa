@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const API_URL = 'http://localhost:8000/api/hcps';
+const API_URL = "https://aivoa-an49.onrender.com/api/hcps";
 
 interface HCP {
   id: string;
@@ -40,87 +40,97 @@ const initialState: HCPState = {
   loading: false,
   error: null,
   filters: {
-    search: '',
-    specialty: '',
-    sortBy: 'name',
-    order: 'asc'
-  }
+    search: "",
+    specialty: "",
+    sortBy: "name",
+    order: "asc",
+  },
 };
 
 export const fetchHCPs = createAsyncThunk(
-  'hcp/fetchAll',
+  "hcp/fetchAll",
   async (_, { getState, rejectWithValue }) => {
     const { hcp } = getState() as { hcp: HCPState };
     const { search, specialty, sortBy, order } = hcp.filters;
-    
+
     try {
       const response = await axios.get(API_URL, {
         params: {
           search: search || undefined,
           specialty: specialty || undefined,
           sort_by: sortBy,
-          order
-        }
+          order,
+        },
       });
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch HCPs');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch HCPs",
+      );
     }
-  }
+  },
 );
 
 export const fetchHCPDetails = createAsyncThunk(
-  'hcp/fetchDetails',
+  "hcp/fetchDetails",
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_URL}/${id}`);
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch HCP details');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch HCP details",
+      );
     }
-  }
+  },
 );
 
 export const fetchHCPInsights = createAsyncThunk(
-  'hcp/fetchInsights',
+  "hcp/fetchInsights",
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_URL}/${id}/insights`);
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to fetch insights');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to fetch insights",
+      );
     }
-  }
+  },
 );
 
 export const createHCP = createAsyncThunk(
-  'hcp/create',
+  "hcp/create",
   async (hcpData: any, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.post(API_URL, hcpData);
       dispatch(fetchHCPs());
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to create HCP');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to create HCP",
+      );
     }
-  }
+  },
 );
 
 export const deleteHCP = createAsyncThunk(
-  'hcp/delete',
+  "hcp/delete",
   async (id: string, { rejectWithValue, dispatch }) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
       dispatch(fetchHCPs());
       return id;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.detail || 'Failed to delete HCP');
+      return rejectWithValue(
+        err.response?.data?.detail || "Failed to delete HCP",
+      );
     }
-  }
+  },
 );
 
 const hcpSlice = createSlice({
-  name: 'hcp',
+  name: "hcp",
   initialState,
   reducers: {
     setFilters(state, action) {
@@ -132,7 +142,7 @@ const hcpSlice = createSlice({
     resetSelectedHCP(state) {
       state.selectedHCP = null;
       state.insights = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder

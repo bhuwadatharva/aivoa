@@ -1,79 +1,91 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { 
-  History, 
-  Download, 
-  Trash2, 
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  History,
+  Download,
+  Trash2,
   ExternalLink,
   ChevronLeft,
   ChevronRight,
-  Filter
-} from 'lucide-react';
-import { RootState, AppDispatch } from '../store';
-import { fetchInteractions, deleteInteraction } from '../store/interactionSlice';
-import { fetchHCPs } from '../store/hcpSlice';
-import axios from 'axios';
+  Filter,
+} from "lucide-react";
+import { RootState, AppDispatch } from "../store";
+import {
+  fetchInteractions,
+  deleteInteraction,
+} from "../store/interactionSlice";
+import { fetchHCPs } from "../store/hcpSlice";
+import axios from "axios";
 
 const InteractionHistory = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { interactions, loading } = useSelector((state: RootState) => state.interaction);
+  const { interactions, loading } = useSelector(
+    (state: RootState) => state.interaction,
+  );
   const { hcps } = useSelector((state: RootState) => state.hcp);
 
-  const [filterHcp, setFilterHcp] = useState('');
-  const [filterSentiment, setFilterSentiment] = useState('');
+  const [filterHcp, setFilterHcp] = useState("");
+  const [filterSentiment, setFilterSentiment] = useState("");
 
   useEffect(() => {
     dispatch(fetchHCPs());
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchInteractions({
-      hcp_id: filterHcp || undefined,
-      sentiment: filterSentiment || undefined
-    }));
+    dispatch(
+      fetchInteractions({
+        hcp_id: filterHcp || undefined,
+        sentiment: filterSentiment || undefined,
+      }),
+    );
   }, [dispatch, filterHcp, filterSentiment]);
 
   const handleExportCSV = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-      const token = localStorage.getItem('aivoa_token');
-      
+      const API_URL =
+        import.meta.env.VITE_API_URL || "https://aivoa-an49.onrender.com/api";
+      const token = localStorage.getItem("aivoa_token");
+
       const response = await axios.get(`${API_URL}/interactions/export`, {
-        responseType: 'blob',
+        responseType: "blob",
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'aivoa_interactions_export.csv');
+      link.setAttribute("download", "aivoa_interactions_export.csv");
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error exporting CSV:', error);
-      alert('Failed to download CSV export. Please make sure the backend is active.');
+      console.error("Error exporting CSV:", error);
+      alert(
+        "Failed to download CSV export. Please make sure the backend is active.",
+      );
     }
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Delete this interaction record? This will also remove any linked follow-ups.")) {
+    if (
+      window.confirm(
+        "Delete this interaction record? This will also remove any linked follow-ups.",
+      )
+    ) {
       dispatch(deleteInteraction(id));
     }
   };
 
   return (
     <div className="space-y-6">
-      
       {/* Filters & Export header */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        
         {/* Dropdowns */}
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
@@ -87,8 +99,10 @@ const InteractionHistory = () => {
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-healthcare-500 dark:text-slate-200"
           >
             <option value="">All HCPs</option>
-            {hcps.map(h => (
-              <option key={h.id} value={h.id}>{h.name}</option>
+            {hcps.map((h) => (
+              <option key={h.id} value={h.id}>
+                {h.name}
+              </option>
             ))}
           </select>
 
@@ -112,14 +126,12 @@ const InteractionHistory = () => {
           <Download className="w-4.5 h-4.5 text-healthcare-500" />
           <span>Export CSV Excel</span>
         </button>
-
       </div>
 
       {/* Main Table */}
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            
             {/* Headers */}
             <thead className="bg-slate-100/50 dark:bg-slate-950/50 text-slate-400 uppercase tracking-wider font-bold border-b border-slate-200/50 dark:border-slate-800/40">
               <tr>
@@ -137,17 +149,21 @@ const InteractionHistory = () => {
               {loading ? (
                 [...Array(4)].map((_, i) => (
                   <tr key={i} className="animate-pulse h-16 bg-slate-50/20">
-                    <td colSpan={6} className="px-6 py-4 text-center">Loading archives...</td>
+                    <td colSpan={6} className="px-6 py-4 text-center">
+                      Loading archives...
+                    </td>
                   </tr>
                 ))
               ) : interactions.length > 0 ? (
                 interactions.map((intr) => (
-                  <tr key={intr.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/30 transition-colors">
-                    
+                  <tr
+                    key={intr.id}
+                    className="hover:bg-slate-50/30 dark:hover:bg-slate-900/30 transition-colors"
+                  >
                     {/* Doctor Info */}
                     <td className="px-6 py-4">
                       {intr.hcp ? (
-                        <div 
+                        <div
                           onClick={() => navigate(`/hcps/${intr.hcp?.id}`)}
                           className="cursor-pointer hover:underline"
                         >
@@ -165,8 +181,12 @@ const InteractionHistory = () => {
 
                     {/* Date/Time */}
                     <td className="px-6 py-4">
-                      <p className="font-semibold text-slate-700 dark:text-slate-300">{intr.meeting_date}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">@ {intr.meeting_time.substring(0, 5)}</p>
+                      <p className="font-semibold text-slate-700 dark:text-slate-300">
+                        {intr.meeting_date}
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        @ {intr.meeting_time.substring(0, 5)}
+                      </p>
                     </td>
 
                     {/* Type badge */}
@@ -178,23 +198,31 @@ const InteractionHistory = () => {
 
                     {/* Summary topics */}
                     <td className="px-6 py-4 max-w-xs">
-                      <p className="font-semibold truncate dark:text-slate-200" title={intr.summary}>
+                      <p
+                        className="font-semibold truncate dark:text-slate-200"
+                        title={intr.summary}
+                      >
                         {intr.summary}
                       </p>
-                      <p className="text-[10px] text-slate-400 truncate mt-0.5" title={intr.notes}>
+                      <p
+                        className="text-[10px] text-slate-400 truncate mt-0.5"
+                        title={intr.notes}
+                      >
                         {intr.notes}
                       </p>
                     </td>
 
                     {/* Sentiment tag */}
                     <td className="px-6 py-4">
-                      <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                        intr.sentiment === 'Positive'
-                          ? 'bg-emerald-500/15 text-emerald-600'
-                          : intr.sentiment === 'Negative'
-                          ? 'bg-red-500/15 text-red-600'
-                          : 'bg-slate-200 text-slate-600'
-                      }`}>
+                      <span
+                        className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                          intr.sentiment === "Positive"
+                            ? "bg-emerald-500/15 text-emerald-600"
+                            : intr.sentiment === "Negative"
+                              ? "bg-red-500/15 text-red-600"
+                              : "bg-slate-200 text-slate-600"
+                        }`}
+                      >
                         {intr.sentiment}
                       </span>
                     </td>
@@ -220,22 +248,23 @@ const InteractionHistory = () => {
                         </button>
                       </div>
                     </td>
-
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
-                    No visit logs match selected filters. Log a new interaction to seed!
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-slate-400"
+                  >
+                    No visit logs match selected filters. Log a new interaction
+                    to seed!
                   </td>
                 </tr>
               )}
             </tbody>
-
           </table>
         </div>
       </div>
-
     </div>
   );
 };
