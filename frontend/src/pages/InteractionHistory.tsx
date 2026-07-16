@@ -78,7 +78,7 @@ const InteractionHistory = () => {
         "Delete this interaction record? This will also remove any linked follow-ups.",
       )
     ) {
-      dispatch(deleteInteraction(id));
+      dispatch(deleteInteraction({ id, hcp_id: filterHcp || undefined }));
     }
   };
 

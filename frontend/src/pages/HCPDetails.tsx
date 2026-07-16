@@ -191,7 +191,7 @@ const HCPDetails = () => {
                   <div className="glass-card p-5">
                     <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">Favorite Portfolios</h4>
                     <div className="flex flex-wrap gap-2">
-                      {insights.favorite_products.map((p, i) => (
+                      {insights.favorite_products.map((p: any, i: number) => (
                         <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/20 dark:border-slate-800/40 font-semibold text-slate-700 dark:text-slate-300">
                           {p}
                         </span>
@@ -203,7 +203,7 @@ const HCPDetails = () => {
                   <div className="glass-card p-5">
                     <h4 className="text-xs font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3">Frequently Discussed Topics</h4>
                     <div className="flex flex-wrap gap-2">
-                      {insights.frequently_discussed_topics.map((t, i) => (
+                      {insights.frequently_discussed_topics.map((t: any, i: number) => (
                         <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-healthcare-550 dark:bg-healthcare-950/20 text-healthcare-600 dark:text-healthcare-400 font-semibold border border-healthcare-100/20">
                           {t}
                         </span>
@@ -278,7 +278,7 @@ const HCPDetails = () => {
                     {intr.products.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 items-center">
                         <span className="text-[9px] text-slate-400 font-bold uppercase mr-1.5">Products:</span>
-                        {intr.products.map((p, idx) => (
+                        {intr.products.map((p: any, idx: number) => (
                           <span key={idx} className="text-[10px] bg-healthcare-500/10 text-healthcare-600 dark:text-healthcare-400 font-bold px-2.5 py-0.5 rounded-md">
                             {p.name}
                           </span>

@@ -42,7 +42,7 @@ const Analytics = () => {
   ];
 
   // Helper for empty data checks
-  const hasProductsData = metrics.top_products.some(p => p.count > 0);
+  const hasProductsData = metrics.top_products.some((p: any) => p.count > 0);
   const finalProductsData = hasProductsData ? metrics.top_products : [
     { name: 'Product X', count: 12 },
     { name: 'Cardivas-10', count: 8 },
@@ -50,7 +50,7 @@ const Analytics = () => {
     { name: 'Gliclazide-MR', count: 3 }
   ];
 
-  const hasCompetitorsData = metrics.competitor_mentions.some(c => c.count > 0);
+  const hasCompetitorsData = metrics.competitor_mentions.some((c: any) => c.count > 0);
   const finalCompetitorsData = hasCompetitorsData ? metrics.competitor_mentions : [
     { name: 'PharmaCorp Y', count: 6 },
     { name: 'Competitor Y', count: 4 },
